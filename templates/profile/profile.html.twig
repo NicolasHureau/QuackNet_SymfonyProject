@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit {{ app.user.duckname }} profile{% endblock %}
+
+{% block body %}
+    <h1>Edit Duck</h1>
+
+    {{ form_start(profileForm) }}
+        {{ form_row(profileForm.duckname) }}
+        {{ form_row(profileForm.firstname) }}
+        {{ form_row(profileForm.lastname) }}
+        {{ form_row(profileForm.email) }}
+
+    <button type="submit" class="btn">Update</button>
+
+    {{ form_end(profileForm) }}
+    <a href="{{ path('change_password') }}">Change Password</a>
+    <a href="{{ path('app_quack_index') }}">back to list</a>
+
+{% endblock %}

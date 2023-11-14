@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Form\ChangePasswordType;
 use App\Form\ProfileFormType;
+use App\Repository\DuckRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,7 +33,6 @@ class ProfileController extends AbstractController
     }
 
     #[Route('/duck/changePass', name: 'change_password', methods: ['GET', 'POST'])]
-
     public function changePassword(Request $request, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $entityManager)
     {
         $duck = $this->getUser();
@@ -65,4 +65,13 @@ class ProfileController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+
+    #[Route('/duck/pond', name: 'app_duck_pond', methods: ['GET', 'POST'])]
+    public function getPond(DuckRepository $duckRepository): Response
+    {
+        return $this->render('profile/pond.html.twig', [
+            'ducks' => $duckRepository->findAll(),
+        ]);
+    }
+
 }

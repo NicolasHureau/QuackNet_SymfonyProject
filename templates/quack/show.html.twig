@@ -24,7 +24,11 @@
 
     <a href="{{ path('app_quack_index') }}">back to list</a>
 
-    <a href="{{ path('app_quack_edit', {'id': quack.id}) }}">edit</a>
+    {% if is_granted('ROLE_USER') and app.user.id == quack.authorId %}
+        <a href="{{ path('app_quack_edit', {'id': quack.id}) }}">edit</a>
 
-    {{ include('quack/_delete_form.html.twig') }}
+        {{ include('quack/_delete_form.html.twig') }}
+
+    {% endif %}
+
 {% endblock %}

@@ -30,6 +30,7 @@ class QuackController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $quack->setAuthorId($this->getUser()->getId());
             $entityManager->persist($quack);
             $entityManager->flush();
 

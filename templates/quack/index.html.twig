@@ -7,23 +7,25 @@
 
     <table class="table">
         <thead>
-            <tr>
-                <th>Id</th>
-                <th>Content</th>
-                <th>Created_at</th>
-                <th>actions</th>
+            <tr class="row">
+                <th class="col">Content</th>
+                <th class="col">actions</th>
+                <th class="col">author</th>
             </tr>
         </thead>
         <tbody>
         {% for quack in quacks %}
-            <tr>
-                <td>{{ quack.id }}</td>
-                <td>{{ quack.content }}</td>
-                <td>{{ quack.createdAt ? quack.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-                <td>
+            <tr class="row">
+                <td class="col">{{ quack.content }}</td>
+                <td class="col">
                     <a href="{{ path('app_quack_show', {'id': quack.id}) }}">show</a>
-                    <a href="{{ path('app_quack_edit', {'id': quack.id}) }}">edit</a>
+
+                    {% if is_granted('ROLE_USER') and app.user.id == quack.authorId %}
+                        <a href="{{ path('app_quack_edit', {'id': quack.id}) }}">edit</a>
+                    {% endif %}
+
                 </td>
+                <td class="col">{{ quack.authorId }}</td>
             </tr>
         {% else %}
             <tr>
@@ -33,5 +35,8 @@
         </tbody>
     </table>
 
-    <a href="{{ path('app_quack_new') }}">Create new</a>
+    {% if is_granted('ROLE_USER') %}
+        <a href="{{ path('app_quack_new') }}">Create new</a>
+    {% endif %}
+
 {% endblock %}

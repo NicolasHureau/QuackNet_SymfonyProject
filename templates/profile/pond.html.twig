@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Duck's pals of {{ app.user.duckname }} profile{% endblock %}
+
+{% block body %}
+    <h1>Duck pond</h1>
+    <table>
+        <tbody>
+        {% for duck in ducks %}
+            <tr>
+                <td>{{ duck.duckname }}</td>
+                <td>{{ duck.email }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <a href="{{ path('app_quack_index') }}">back to list</a>
+
+{% endblock %}

@@ -5,38 +5,30 @@
 {% block body %}
     <h2>Quack index</h2>
 
-    <table class="table">
-        <thead>
-            <tr class="row">
-                <th class="col">Content</th>
-                <th class="col">actions</th>
-                <th class="col">author</th>
-            </tr>
-        </thead>
-        <tbody>
+    <div class="d-flex gap-3">
         {% for quack in quacks %}
-            <tr class="row">
-                <td class="col">{{ quack.content }}</td>
-                <td class="col">
-                    <a href="{{ path('app_quack_show', {'id': quack.id}) }}">show</a>
-
-                    {% if is_granted('ROLE_USER') and app.user.id == quack.authorId %}
-                        <a href="{{ path('app_quack_edit', {'id': quack.id}) }}">edit</a>
-                    {% endif %}
-
-                </td>
-                <td class="col">{{ quack.authorId }}</td>
-            </tr>
+        <div class="card col-6">
+            <img src="{{ asset(quack.img) }}" class="card-img-top">
+            <div class="card-body">
+                <p class="card-text">{{ quack.content }}</p>
+                <footer class="blockquote-footer">{{ quack.authorId }}</footer>
+                {% if is_granted('ROLE_USER') and app.user.id == quack.authorId %}
+                    <div class="text-end">
+                        <a class="btn btn-primary" href="{{ path('app_quack_edit', {'id': quack.id}) }}">edit</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
         {% else %}
             <tr>
                 <td colspan="4">no records found</td>
             </tr>
         {% endfor %}
-        </tbody>
-    </table>
+
+    </div>
 
     {% if is_granted('ROLE_USER') %}
-        <a href="{{ path('app_quack_new') }}">Create new</a>
+        <a class="btn btn-primary m-3" href="{{ path('app_quack_new') }}">Create new</a>
     {% endif %}
 
 {% endblock %}

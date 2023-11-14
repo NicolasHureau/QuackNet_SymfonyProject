@@ -32,8 +32,8 @@ class Quack
     #[ORM\Column]
     private ?int $author_id = null;
 
-//    #[ORM\Column(length: 255)]
-//    private ?string $img = null;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $img = null;
 
     public function getId(): ?int
     {
@@ -81,7 +81,7 @@ class Quack
         return $this->img;
     }
 
-    public function setImg(string $img): static
+    public function setImg(?string $img): static
     {
         $this->img = $img;
 

@@ -35,6 +35,9 @@ class Quack
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $img = null;
 
+    #[ORM\Column(type: Types::SIMPLE_ARRAY, nullable: true)]
+    private ?array $tag = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -84,6 +87,18 @@ class Quack
     public function setImg(?string $img): static
     {
         $this->img = $img;
+
+        return $this;
+    }
+
+    public function getTag(): ?array
+    {
+        return $this->tag;
+    }
+
+    public function setTag(?array $tag): static
+    {
+        $this->tag = $tag;
 
         return $this;
     }

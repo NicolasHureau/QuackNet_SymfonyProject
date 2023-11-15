@@ -4,9 +4,11 @@ namespace App\Controller;
 
 use App\Entity\Quack;
 use App\Form\QuackType;
+use App\Repository\DuckRepository;
 use App\Repository\QuackRepository;
 use App\Service\FileUploader;
 use Doctrine\ORM\EntityManagerInterface;
+use phpDocumentor\Reflection\DocBlock\Tags\Author;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\File;
@@ -20,10 +22,15 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 class QuackController extends AbstractController
 {
     #[Route('/', name: 'app_quack_index', methods: ['GET'])]
-    public function index(QuackRepository $quackRepository): Response
+    public function index(QuackRepository $quackRepository, DuckRepository $duckRepository): Response
     {
+        $quacks = $quackRepository->findAll();
+        foreach ($quacks as $quack){
+            $quack->author = $duckRepository->findOneBy(['id' => $quack->getAuthorId()])->getDuckname();
+        }
+
         return $this->render('quack/index.html.twig', [
-            'quacks' => $quackRepository->findAll(),
+            'quacks' => $quacks,
         ]);
     }
 

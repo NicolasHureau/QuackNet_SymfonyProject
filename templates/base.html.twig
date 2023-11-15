@@ -19,18 +19,18 @@
 
         <h1 class="text-center">Quack Net</h1>
 
-        <navbar class="d-flex justify-content-evenly py-1 bg-warning">
+        <navbar class="d-flex justify-content-evenly py-1 bg-warning bg-opacity-10 border border-warning my-5">
             {% if not app.user %}
-                <a class="link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="{{ path('app_register') }}" >Sign In</a>
-                <a class="link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="{{ path('app_login') }}">Login</a>
+                <a class="" href="{{ path('app_register') }}" >Sign In</a>
+                <a class="" href="{{ path('app_login') }}">Login</a>
             {% endif %}
             {% if is_granted('ROLE_USER') %}
-                <a class="link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="{{ path('app_logout') }}">Logout</a>
-                <a class="link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="{{ path('app_duck_profile') }}">Profile</a>
+                <a class="" href="{{ path('app_logout') }}">Logout</a>
+                <a class="" href="{{ path('app_duck_profile') }}">Profile</a>
             {% endif %}
         </navbar>
 
-        <div class="p-5 m-5">
+        <div class="">
             {% block body %}{% endblock %}
         </div>
 

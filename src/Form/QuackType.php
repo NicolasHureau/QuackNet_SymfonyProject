@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Quack;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -16,8 +17,10 @@ class QuackType extends AbstractType
             ->add('content')
             ->add('img', FileType::class, [
                 'label' => 'Image',
-                'required' => false
+                'required' => false,
+                'data_class' => null
             ])
+            ->add('tag', CollectionType::class)
         ;
     }
 

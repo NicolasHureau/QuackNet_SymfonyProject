@@ -3,29 +3,30 @@
 {% block title %}Quack index{% endblock %}
 
 {% block body %}
-    <h2>Quack index</h2>
-
-    <div class="d-flex gap-3">
-        {% for quack in quacks %}
-        <div class="card col-6">
-            <img src="{{ asset(quack.img) }}" class="card-img-top">
-            <div class="card-body">
-                <p class="card-text">{{ quack.content }}</p>
-                <footer class="blockquote-footer">{{ quack.authorId }}</footer>
-                {% if is_granted('ROLE_USER') and app.user.id == quack.authorId %}
-                    <div class="text-end">
-                        <a class="btn btn-primary" href="{{ path('app_quack_edit', {'id': quack.id}) }}">edit</a>
+    <h2 class="my-3">Quack index</h2>
+        <div class="d-flex gap-4 flex-wrap justify-content-around">
+            {% for quack in quacks %}
+                <div class="card col-5 shadow-lg">
+                    <img src="{{ asset(quack.img) }}" class="card-img-top">
+                    <div class="card-body">
+                        <p class="card-text">{{ quack.content }}</p>
+                        <footer>
+                            <p class="blockquote-footer">{{ quack.author }}</p>
+                            <p>{{ quack.createdAt|format_datetime('medium','short', locale='fr') }}</p>
+                        </footer>
+                        {% if is_granted('ROLE_USER') and app.user.id == quack.authorId %}
+                            <div class="text-end">
+                                <a class="btn btn-primary" href="{{ path('app_quack_edit', {'id': quack.id}) }}">edit</a>
+                            </div>
+                        {% endif %}
                     </div>
-                {% endif %}
-            </div>
+                </div>
+            {% else %}
+                <tr>
+                    <td colspan="4">no records found</td>
+                </tr>
+            {% endfor %}
         </div>
-        {% else %}
-            <tr>
-                <td colspan="4">no records found</td>
-            </tr>
-        {% endfor %}
-
-    </div>
 
     {% if is_granted('ROLE_USER') %}
         <a class="btn btn-primary m-3" href="{{ path('app_quack_new') }}">Create new</a>

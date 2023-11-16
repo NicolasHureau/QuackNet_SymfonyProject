@@ -3,13 +3,17 @@
 namespace App\Controller;
 
 use App\Entity\Quack;
+use App\Entity\Tag;
 use App\Form\QuackType;
 use App\Repository\DuckRepository;
 use App\Repository\QuackRepository;
 use App\Service\FileUploader;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use phpDocumentor\Reflection\DocBlock\Tags\Author;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -38,33 +42,20 @@ class QuackController extends AbstractController
     public function new(Request $request, EntityManagerInterface $entityManager, FileUploader $fileUploader): Response
     {
         $quack = new Quack();
+        $quack->addTags(new ArrayCollection());
         $form = $this->createForm(QuackType::class, $quack);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $quack->setAuthorId($this->getUser()->getId());
 
+            $tags = $quack->getTags();
+            foreach ($tags as $tag) {
+                $entityManager->persist($tag);
+            }
+
             $image = $form->get('img')->getData();
             if ($image) {
-//                $originalFilename = pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME);
-//                // this is needed to safely include the file name as part of the URL
-//                $safeFilename = $slugger->slug($originalFilename);
-//                $newFilename = $safeFilename.'-'.uniqid().'.'.$image->guessExtension();
-//
-//                // Move the file to the directory where brochures are stored
-//                try {
-//                    $image->move(
-//                        $this->getParameter('images_directory'),
-//                        $newFilename
-//                    );
-//                } catch (FileException $e) {
-//                    // ... handle exception if something happens during file upload
-//
-//                }
-//
-//                // updates the 'brochureFilename' property to store the PDF file name
-//                // instead of its contents
-//                $quack->setimg($newFilename);
 
                 $imageFileName = $fileUploader->upload($image);
                 $quack->setImg($imageFileName);
@@ -77,9 +68,40 @@ class QuackController extends AbstractController
             return $this->redirectToRoute('app_quack_index', [], Response::HTTP_SEE_OTHER);
         }
 
+        // Separate form for adding tags
+        $tagForm = $this->createFormBuilder()
+            ->add('tag', TextType::class, [
+                'label' => 'Add New Tag',
+                'required' => false,
+            ])
+            ->add('addTag', SubmitType::class, [
+                'label' => 'Add Tag',
+            ])
+            ->getForm();
+
+        $tagForm->handleRequest($request);
+
+        if ($tagForm->isSubmitted() && $tagForm->isValid()) {
+            $newTag = $tagForm->get('tag')->getData();
+
+            // Handle the new tag (e.g., create Tag entity and associate with Quack)
+            $tag = new Tag();
+            $tag->setName($newTag);
+
+            // Add the tag to the Quack entity
+            $quack->addTag($tag);
+
+            $entityManager->persist($tag);
+            $entityManager->flush();
+
+            // Redirect back to the new quack page or modify as needed
+            return $this->redirectToRoute('app_quack_new');
+        }
+
         return $this->render('quack/new.html.twig', [
             'quack' => $quack,
-            'form' => $form,
+            'form' => $form->createView(),
+            'tagForm' => $tagForm->createView(),
         ]);
     }
 
@@ -102,14 +124,46 @@ class QuackController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
             $entityManager->flush();
 
             return $this->redirectToRoute('app_quack_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('quack/edit.html.twig', [
+        // Separate form for adding tags
+        $tagForm = $this->createFormBuilder()
+            ->add('tag', TextType::class, [
+                'label' => 'Add New Tag',
+                'required' => false,
+            ])
+            ->add('addTag', SubmitType::class, [
+                'label' => 'Add Tag',
+            ])
+            ->getForm();
+
+        $tagForm->handleRequest($request);
+
+        if ($tagForm->isSubmitted() && $tagForm->isValid()) {
+            $newTag = $tagForm->get('tag')->getData();
+
+            // Handle the new tag (e.g., create Tag entity and associate with Quack)
+            $tag = new Tag();
+            $tag->setName($newTag);
+
+            // Add the tag to the Quack entity
+            $quack->addTag($tag);
+
+            $entityManager->persist($tag);
+            $entityManager->flush();
+
+            // Redirect back to the new quack page or modify as needed
+            return $this->redirectToRoute('app_quack_new', ['id' => $quack->getId()]);
+        }
+
+        return $this->render('quack/new.html.twig', [
             'quack' => $quack,
-            'form' => $form,
+            'form' => $form->createView(),
+            'tagForm' => $tagForm->createView(),
         ]);
     }
 
@@ -123,4 +177,74 @@ class QuackController extends AbstractController
 
         return $this->redirectToRoute('app_quack_index', [], Response::HTTP_SEE_OTHER);
     }
+
+    #[Route('/{id}/comment', name: 'app_quack_new_comment', methods: ['GET', 'POST'])]
+    public function newComment(Request $request, Quack $quack, EntityManagerInterface $entityManager, FileUploader $fileUploader): Response
+    {
+        $quackComment = new Quack();
+        $quackComment->addTags(new ArrayCollection());
+        $form = $this->createForm(QuackType::class, $quackComment);
+        $form->handleRequest($request);
+
+        if($form->isSubmitted() && $form->isValid()) {
+            $quackComment->setAuthorId($this->getUser()->getId());
+//            $quackComment->setQuack($quack->getId());
+            $quack->addComment($quackComment);
+
+            $image = $form->get('img')->getData();
+            if ($image) {
+
+                $imageFileName = $fileUploader->upload($image);
+                $quackComment->setImg($imageFileName);
+
+            }
+
+            $tags = $quackComment->getTags();
+            foreach ($tags as $tag) {
+                $entityManager->persist($tag);
+            }
+
+            $entityManager->persist($quackComment);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('app_quack_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        // Separate form for adding tags
+        $tagForm = $this->createFormBuilder()
+            ->add('tag', TextType::class, [
+                'label' => 'Add New Tag',
+                'required' => false,
+            ])
+            ->add('addTag', SubmitType::class, [
+                'label' => 'Add Tag',
+            ])
+            ->getForm();
+
+        $tagForm->handleRequest($request);
+
+        if ($tagForm->isSubmitted() && $tagForm->isValid()) {
+            $newTag = $tagForm->get('tag')->getData();
+
+            // Handle the new tag (e.g., create Tag entity and associate with Quack)
+            $tag = new Tag();
+            $tag->setName($newTag);
+
+            // Add the tag to the Quack entity
+            $quackComment->addTag($tag);
+
+            $entityManager->persist($tag);
+            $entityManager->flush();
+
+            // Redirect back to the new quack page or modify as needed
+            return $this->redirectToRoute('app_quack_new');
+        }
+
+        return $this->render('quack/new.html.twig', [
+            'quack' => $quackComment,
+            'form' => $form->createView(),
+            'tagForm' => $tagForm->createView(),
+        ]);
+    }
+
 }

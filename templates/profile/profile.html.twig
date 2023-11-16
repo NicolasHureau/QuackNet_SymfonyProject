@@ -10,12 +10,13 @@
         {{ form_row(profileForm.firstname) }}
         {{ form_row(profileForm.lastname) }}
         {{ form_row(profileForm.email) }}
+<div class="buttons">
 
-    <button type="submit" class="btn">Update</button>
+    <button type="submit" class="btn btn-primary">Update</button>
 
     {{ form_end(profileForm) }}
-    <a href="{{ path('change_password') }}">Change Password</a>
-    <a href="{{ path('app_quack_index') }}">back to list</a>
-    <a href="{{ path('app_duck_pond') }}">duck pond</a>
-
+        <a class="btn btn-danger" href="{{ path('change_password') }}">Change Password</a>
+        <a class="btn btn-warning" href="{{ path('app_quack_index') }}">back to list</a>
+        <a class="btn btn-success" href="{{ path('app_duck_pond') }}">duck pond</a>
+    </div>
 {% endblock %}

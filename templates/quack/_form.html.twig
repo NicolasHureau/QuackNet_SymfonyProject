@@ -1,4 +1,38 @@
+{#{{ form_start(form) }}#}
+{#    {{ form_widget(form) }}#}
+
+
+{#    <div class="buttons">#}
+{#        <button class="btn btn-success">{{ button_label|default('Save') }}</button>#}
+{#{{ form_end(form) }}#}
+
 {{ form_start(form) }}
-    {{ form_widget(form) }}
+
+{{ form_label(form.content, 'Quack Content') }}
+{{ form_errors(form.content) }}
+{{ form_widget(form.content) }}
+{{ form_widget(form.img) }}
+{{ form_widget(form.tags) }}
+
+
+{#<div>#}
+{#    {{ form_label(form.tags, 'Tags') }}#}
+{#    {{ form_errors(form.tags) }}#}
+
+{#    {% for tagForm in form.tags %}#}
+{#        {{ form_row(tagForm) }}#}
+{#    {% endfor %}#}
+
+{#    <div class="newtag">#}
+{#        {{ form_start(tagForm) }}#}
+{#        {{ form_row(tagForm.tag) }}#}
+{#        {{ form_row(tagForm.addTag) }}#}
+{#        {{ form_end(tagForm) }}#}
+{#    </div>#}
+{#</div>#}
+
+<div class="buttons">
     <button class="btn btn-success">{{ button_label|default('Save') }}</button>
+
+
 {{ form_end(form) }}
